@@ -6,14 +6,14 @@
   "author": "",
   "main": "./dist/src/app.js",
   "scripts": {
-    "build": "yarn clean && yarn compile && yarn pack",
+    "build": "yarn clean && yarn compile",
     "clean": "rimraf ./dist && rimraf ./pack",
-    "compile": "tsc",
-    "pack": "webpack && pkg ./pack/server.js --out-path ./pkg",
+    "compile": "tsc && webpack",
+    "pack": "pkg ./pack/server.js --out-path ./pkg",
     "dev": "ts-node-dev -r tsconfig-paths/register --debug --cls --prefer-ts --inspect -- ./src/app.ts",
     "generate-key": "openssl ecparam -name prime256v1 -genkey -noout -out ./key.pem",
     "lint": "eslint . --ext .ts",
-    "serve": "node -r tsconfig-paths/register ./dist/src/app.js",
+    "serve": "node ./pack/server.js",
     "start": "yarn serve"
   },
   "dependencies": {
