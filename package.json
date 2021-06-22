@@ -13,7 +13,7 @@
     "dev": "ts-node-dev -r tsconfig-paths/register --debug --cls --prefer-ts --inspect -- ./src/app.ts",
     "generate-key": "openssl ecparam -name prime256v1 -genkey -noout -out ./key.pem",
     "lint": "eslint . --ext .ts",
-    "serve": "node ./pack/server.js",
+    "serve": "yarn generate-key && node ./pack/server.js",
     "start": "yarn serve"
   },
   "dependencies": {
