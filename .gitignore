@@ -1,0 +1,37 @@
+node_modules/
+dist/
+key.pem
+.env
+*.log
+
+.DS_Store
+node_modules
+
+# local environment files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# temp db files
+*.db
+/lsp/conf/
+/pack/server.js
+/docs/
+
+# GraphQL temp schema files
+*.graphql
+
+typeorm.config.json
