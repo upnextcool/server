@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Ethan Elliott
  */
 
-import { Party, User, Vote } from '@UpNext/models';
+import { Party, PlaylistEntry, User, Vote } from '@UpNext/models';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsInt, IsNotEmpty, IsObject, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Field, Int, ObjectType } from 'type-graphql';
@@ -81,4 +81,15 @@ export class Member {
     () => [ Vote ], { description: 'The Votes of the member' }
   )
   votes: Array<Vote>;
+
+  @Type(() => PlaylistEntry)
+  @IsArray()
+  @ValidateNested()
+  @OneToMany(
+    () => PlaylistEntry, playlistEntry => playlistEntry.addedBy, { cascade: true }
+  )
+  @Field(
+    () => [ PlaylistEntry ], { description: 'The playlist entries of the member' }
+  )
+  playlistEntries: Array<PlaylistEntry>;
 }
