@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Ethan Elliott
  */
 
-import { Member, Party, PlaylistEntry, User, Vote } from '@UpNext/models';
+import { Member, Party, User, Vote } from '@UpNext/models';
 import { MemberRepository } from '@UpNext/repositories';
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
@@ -60,11 +60,6 @@ export class MemberService {
   async getVotesFor(member: Member): Promise<Array<Vote>> {
     const m = await this._memberRepository.findOne({ relations: [ 'votes' ], where: { id: member.id } });
     return m.votes;
-  }
-
-  async getPlaylistEntriesFor(member: Member): Promise<Array<PlaylistEntry>> {
-    const m = await this._memberRepository.findOne({ relations: [ 'playlistEntries' ], where: { id: member.id } });
-    return m.playlistEntries;
   }
 
   async new(member: Partial<Member>): Promise<Member> {
