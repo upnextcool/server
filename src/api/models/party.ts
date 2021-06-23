@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Ethan Elliott
  */
 
-import { ActiveAuth, Member, PlaylistEntry, SpotifyAccount } from '@UpNext/models';
+import { ActiveAuth, Member, PlaylistEntry, PlaylistHistory, SpotifyAccount } from '@UpNext/models';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsObject, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Field, ObjectType } from 'type-graphql';
@@ -74,6 +74,17 @@ export class Party {
     () => [ PlaylistEntry ], { description: 'The playlist of the party' }
   )
   playlist: Array<PlaylistEntry>;
+
+  @Type(() => PlaylistHistory)
+  @IsArray()
+  @ValidateNested()
+  @OneToMany(
+    () => PlaylistHistory, playlistHistory => playlistHistory.party, { cascade: true }
+  )
+  @Field(
+    () => [ PlaylistHistory ], { description: 'The playlist of the party' }
+  )
+  history: Array<PlaylistHistory>;
 
   @IsObject()
   @ValidateNested()

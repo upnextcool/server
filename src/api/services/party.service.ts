@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Ethan Elliott
  */
 
-import { Member, Party, PlaylistEntry, SpotifyAccount } from '@UpNext/models';
+import { Member, Party, PlaylistEntry, PlaylistHistory, SpotifyAccount } from '@UpNext/models';
 import { PartyRepository } from '@UpNext/repositories';
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
@@ -53,9 +53,26 @@ export class PartyService {
 
   async createParty(name: string): Promise<Party> {
     return this._partyRepository.save({
-      code: 'ABCD',
+      code: this.generateCode(),
       name,
-      spotifyPlaylistId: 'abc'
+      spotifyPlaylistId: ''
     });
+  }
+
+  private generateCode(): string {
+    const ALL = 'abcdefghijklmnpqrstuvwxyz1234567890'.toUpperCase();
+    return [ ...'XXXX' ].map(() => ALL[Math.floor(Math.random() * ALL.length)]).join('');
+  }
+
+  async updateParty(party: Partial<Party>) {
+    await this._partyRepository.update(
+      party.id,
+      party
+    );
+  }
+
+  async getHistoryFor(party: Party): Promise<Array<PlaylistHistory>> {
+    const p = await this._partyRepository.findOne({ relations: [ 'history' ], where: { id: party.id } });
+    return p.history;
   }
 }

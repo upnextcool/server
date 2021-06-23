@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Ethan Elliott
  */
 
-import { Party, PlaylistEntry } from '@UpNext/models';
+import { Party, PlaylistEntry, PlaylistHistory } from '@UpNext/models';
 import { PartyStateOutput } from '@UpNext/resolvers/output';
 import { AuthService, FullArtist, PartyService, UpNextService } from '@UpNext/services';
 import { Album, FeaturedPlaylists, Playlist as PlaylistObject, SearchResultAll } from '@UpNext/spotify';
@@ -39,6 +39,18 @@ export class UpNextResolver {
   )
   async checkForMembership(@Arg('userId') userId: string): Promise<Party | null> {
     return this._upNextService.checkForMembership(userId);
+  }
+
+  @Query(() => Boolean)
+  @Authorized()
+  async validToken(@Ctx() context: Context): Promise<boolean> {
+    return !!context.member;
+  }
+
+  @Query(() => [ PlaylistHistory ])
+  @Authorized()
+  async history(@Ctx() context: Context): Promise<Array<PlaylistHistory>> {
+    return this._partyService.getHistoryFor(context.party);
   }
 
   @Query(() => Party)

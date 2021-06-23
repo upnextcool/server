@@ -7,6 +7,7 @@ import { MemberService } from '@UpNext/services/member.service';
 import { PartyService } from '@UpNext/services/party.service';
 import { PartyStateService } from '@UpNext/services/party-state.service';
 import { PlaylistEntryService } from '@UpNext/services/playlist-entry.service';
+import { PlaylistHistoryService } from '@UpNext/services/playlist-history.service';
 import { SpotifyService } from '@UpNext/services/spotify.service';
 import { TokenService } from '@UpNext/services/token.service';
 import { UserService } from '@UpNext/services/user.service';
@@ -42,7 +43,8 @@ export class UpNextService {
     private readonly _spotifyService: SpotifyService,
     private readonly _partyStateService: PartyStateService,
     private readonly _playlistEntryService: PlaylistEntryService,
-    private readonly _voteService: VoteService
+    private readonly _voteService: VoteService,
+    private readonly _playlistHistoryService: PlaylistHistoryService
   ) {}
 
   async joinParty(
@@ -246,6 +248,7 @@ export class UpNextService {
     const previousState = await this._partyStateService.getStateFor(party);
 
     const currentPartyState = await this.determineCurrentState(
+      party,
       currentSpotifyState,
       previousState ? previousState.currentlyPlaying : undefined
     );
@@ -275,6 +278,11 @@ export class UpNextService {
   ): Promise<PartyState> {
     switch (currentPartyState) {
     case PartyStateEnum.NEW_SONG:
+      await this._spotifyService.spotifyApis.playlist.addTracks(
+        party.spotifyAccount.token,
+        party.spotifyPlaylistId,
+        [ currentSpotifyState.item.id ]
+      );
       const artwork = currentSpotifyState.item.album.images
         .find(image => image.height ===
           Math.max(...currentSpotifyState.item.album.images.map(p => p.height))).url;
@@ -308,19 +316,40 @@ export class UpNextService {
           a, b
         ) => b.score - a.score);
         const [ nextSong ] = sorted;
-        console.log(nextSong);
         const spotifyAccount = await this._partyService.getSpotifyAccountFor(party);
         await this._spotifyService.spotifyApis.player.addSongToEndOfQueue(
           spotifyAccount.token,
           nextSong.spotifyId
         );
+        await this._playlistHistoryService.addToHistory({
+          addedBy: nextSong.addedBy,
+          albumArtwork: nextSong.albumArtwork,
+          artist: nextSong.artist,
+          name: nextSong.name,
+          party,
+          score: nextSong.votes
+            .map(v => v.type === VoteTypeEnum.UP_VOTE ? 1 : -1)
+            .reduce(
+              (
+                p,
+                c
+              ) => p + c, 0
+            ),
+          spotifyId: nextSong.spotifyId
+        });
         await this._playlistEntryService.remove(nextSong);
         this._partyStateService.setNextSongQueued(
           party,
           nextSong.spotifyId
         );
       }
-      break;
+      return this._partyStateService.updateState(
+        previousPartyState,
+        {
+          playing: currentSpotifyState.is_playing,
+          progress: currentSpotifyState.progress_ms
+        }
+      );
     case PartyStateEnum.PLAYING:
       return this._partyStateService.updateState(
         previousPartyState, 
@@ -342,18 +371,20 @@ export class UpNextService {
   }
 
   private async determineCurrentState(
+    party: Party,
     currentState: CurrentlyPlaying, 
     previousState: CurrentlyPlaying
   ): Promise<PartyStateEnum> {
-    if (!previousState) {
-      return PartyStateEnum.NEW_SONG;
-    }
     if (!currentState) {
       return PartyStateEnum.NOTHING_PLAYING;
     }
+    if (!previousState) {
+      return PartyStateEnum.NEW_SONG;
+    }
     if (currentState.is_playing) {
       if (currentState.item.id === previousState.item.id) {
-        if (currentState.item.duration_ms - currentState.progress_ms < 10_000) {
+        if (currentState.item.duration_ms - currentState.progress_ms < 10_000
+          && !this._partyStateService.hasSongQueued(party)) {
           return PartyStateEnum.NEXT_FROM_QUEUE;
         }
         return PartyStateEnum.PLAYING;
@@ -364,43 +395,3 @@ export class UpNextService {
 
   }
 }
-
-// If (state.item) {
-//   Const previousState = this._partyStates.get(party.id);
-//
-//   Const artwork = state.item.album.images
-//     .find(image => image.height ===
-//       Math.max(...state.item.album.images.map(p => p.height))).url;
-//
-//   Const palette: ArtworkPalette = previousState
-//   && previousState.active
-//   && previousState.track.spotifyId === state.item.id
-//     ? previousState.track.palette : await this.computePalette(artwork);
-//
-//   This._partyStates.set(
-//     Party.id,
-//     This.mergeState(
-//       PreviousState, {
-//         Active: true,
-//         Track: {
-//           Artist: state.item.artists.map(a => a.name).join(', '),
-//           Artwork,
-//           Duration: state.item.duration_ms,
-//           Name: state.item.name,
-//           Palette,
-//           Playing: state.is_playing,
-//           Progress: state.progress_ms,
-//           SpotifyId: state.item.id
-//         }
-//       }
-//     )
-//   );
-// } else {
-//   This._partyStates.set(
-//     Party.id, {
-//       Active: false,
-//       State: PartyStateEnum.NOTHING_PLAYING,
-//       Track: undefined
-//     }
-//   );
-// }
