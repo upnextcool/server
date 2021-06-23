@@ -287,6 +287,13 @@ export class UpNextService {
         .find(image => image.height ===
           Math.max(...currentSpotifyState.item.album.images.map(p => p.height))).url;
       this._partyStateService.setEmptyNextSongQueue(party);
+      await this._playlistHistoryService.addToHistory({
+        albumArtwork: artwork,
+        artist: currentSpotifyState.item.artists.map(a => a.name).join(', '),
+        name: currentSpotifyState.item.name,
+        party,
+        spotifyId: currentSpotifyState.item.id
+      });
       return this._partyStateService.updateState(
         undefined, {
           artist: currentSpotifyState.item.artists.map(a => a.name).join(', '),
@@ -321,22 +328,6 @@ export class UpNextService {
           spotifyAccount.token,
           nextSong.spotifyId
         );
-        await this._playlistHistoryService.addToHistory({
-          addedBy: nextSong.addedBy,
-          albumArtwork: nextSong.albumArtwork,
-          artist: nextSong.artist,
-          name: nextSong.name,
-          party,
-          score: nextSong.votes
-            .map(v => v.type === VoteTypeEnum.UP_VOTE ? 1 : -1)
-            .reduce(
-              (
-                p,
-                c
-              ) => p + c, 0
-            ),
-          spotifyId: nextSong.spotifyId
-        });
         await this._playlistEntryService.remove(nextSong);
         this._partyStateService.setNextSongQueued(
           party,
