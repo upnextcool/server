@@ -36,6 +36,7 @@ export const environment = {
   },
   front: {
     url: EnvironmentHelpers.getOsEnv('FRONT_URL'),
+    version: EnvironmentHelpers.toNumber(EnvironmentHelpers.getOsEnv('FRONT_VERSION')),
   },
   graphql: {
     enabled: EnvironmentHelpers.toBoolean(EnvironmentHelpers.getOsEnv('GRAPHQL_ENABLED')),

@@ -2,6 +2,7 @@
  * Copyright (c) 2021, Ethan Elliott
  */
 
+export * from './front.resolver';
 export * from './member.resolver';
 export * from './party.resolver';
 export * from './playlist-entry.resolver';
