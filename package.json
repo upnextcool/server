@@ -10,7 +10,7 @@
     "clean": "rimraf ./dist && rimraf ./pack",
     "compile": "tsc && webpack",
     "pack": "pkg ./pack/server.js --out-path ./pkg",
-    "dev": "ts-node-dev -r tsconfig-paths/register --debug --cls --prefer-ts --inspect -- ./src/app.ts",
+    "dev": "node ./generate-key.js && ts-node-dev -r tsconfig-paths/register --debug --cls --prefer-ts --inspect -- ./src/app.ts",
     "generate-key": "openssl ecparam -name prime256v1 -genkey -noout -out ./key.pem",
     "lint": "eslint . --ext .ts",
     "serve": "node ./generate-key.js && node ./pack/server.js",

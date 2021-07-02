@@ -20,6 +20,7 @@ import {
   Playlist as PlaylistObject,
   SearchResultAll,
   SimplifiedAlbum,
+  Track,
   TrackArray,
 } from '@UpNext/spotify';
 import { PartyState, PartyStateEnum, VoteTypeEnum } from '@UpNext/types';
@@ -164,8 +165,9 @@ export class UpNextService {
       spotifyAccount.token,
       artistId
     );
+    const cleanedAlbums = this.cleanAlbums(albums);
     return {
-      albums,
+      albums: cleanedAlbums,
       info: artist,
       tracks
     };
@@ -384,5 +386,57 @@ export class UpNextService {
     }
     return PartyStateEnum.PAUSED;
 
+  }
+
+  async getSpotifySong(
+    party: Party,
+    songId: string
+  ): Promise<Track> {
+    const spotifyAccount = await this._partyService.getSpotifyAccountFor(party);
+    return this._spotifyService.spotifyApis.tracks.getTrack(
+      spotifyAccount.token, songId
+    );
+  }
+
+  private cleanAlbums(albums: Array<SimplifiedAlbum>): Array<SimplifiedAlbum> {
+    const dedupedAlbums = this.dedupeAlbums(albums);
+    const albumMap = new Map<string, Array<SimplifiedAlbum>>();
+    dedupedAlbums.forEach(album => {
+      if (albumMap.has(album.name)) {
+        const x = albumMap.get(album.name);
+        x.push(album);
+        albumMap.set(
+          album.name,
+          x
+        );
+      } else {
+        albumMap.set(
+          album.name,
+          [ album ]
+        );
+      }
+    });
+    const cleanedAlbums = [];
+    albumMap.forEach((value) => {
+      cleanedAlbums.push(...value);
+    });
+    return cleanedAlbums;
+  }
+  
+  private dedupeAlbums(albums: Array<SimplifiedAlbum>): Array<SimplifiedAlbum> {
+    const hashTable = albums.reduce(
+      (
+        a, c
+      ) => ({
+        ...a,
+        [c.id]: c,
+      }),
+      {}
+    );
+    const noDupe = [];
+    new Set(albums.map((album) => `${album.id}`)).forEach((albumId) => {
+      noDupe.push(hashTable[albumId]);
+    });
+    return noDupe;
   }
 }

@@ -5,7 +5,7 @@
 import { Member, Party, PlaylistEntry, PlaylistHistory } from '@UpNext/models';
 import { PartyStateOutput } from '@UpNext/resolvers/output';
 import { AuthService, FullArtist, PartyService, UpNextService } from '@UpNext/services';
-import { Album, FeaturedPlaylists, Playlist as PlaylistObject, SearchResultAll } from '@UpNext/spotify';
+import { Album, FeaturedPlaylists, Playlist as PlaylistObject, SearchResultAll, Track } from '@UpNext/spotify';
 import { Context } from '@UpNext/types';
 import GraphQLJSON from 'graphql-type-json';
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
@@ -96,6 +96,18 @@ export class UpNextResolver {
   async leaveParty(@Arg('userId') userId: string): Promise<string> {
     await this._upNextService.leaveParty(userId);
     return userId;
+  }
+
+  @Query(() => GraphQLJSON)
+  @Authorized()
+  async spotifySong(
+    @Ctx() context: Context,
+    @Arg('songId') songId: string,
+  ): Promise<Track> {
+    return this._upNextService.getSpotifySong(
+      context.party,
+      songId
+    );
   }
 
   @Query(() => GraphQLJSON)
