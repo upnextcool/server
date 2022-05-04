@@ -17,7 +17,7 @@
     "start": "yarn serve"
   },
   "dependencies": {
-    "apollo-server-express": "^2.24.1",
+    "apollo-server-express": "^3.6.7",
     "axios": "^0.21.2",
     "body-parser": "^1.19.0",
     "chalk": "^5.0.1",
