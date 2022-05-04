@@ -50,7 +50,7 @@
     "typeorm": "^0.2.25",
     "typeorm-typedi-extensions": "^0.2.3",
     "uuid": "^8.3.2",
-    "validator": "^13.6.0",
+    "validator": "^13.7.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
