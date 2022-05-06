@@ -19,7 +19,7 @@
   "dependencies": {
     "apollo-server-express": "^2.24.1",
     "axios": "^0.21.2",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.0",
     "chalk": "^5.0.1",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
@@ -35,7 +35,7 @@
     "is-there": "^4.5.1",
     "jsonwebtoken": "^8.5.1",
     "microframework": "^0.6.4",
-    "multer": "^1.4.2",
+    "multer": "^1.4.4",
     "node-vibrant": "^3.2.1-alpha.1",
     "pg": "^8.6.0",
     "qrcode": "^1.4.4",
