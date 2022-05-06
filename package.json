@@ -35,7 +35,7 @@
     "is-there": "^4.5.1",
     "jsonwebtoken": "^8.5.1",
     "microframework": "^0.6.4",
-    "multer": "^1.4.2",
+    "multer": "^1.4.4",
     "node-vibrant": "^3.2.1-alpha.1",
     "pg": "^8.6.0",
     "qrcode": "^1.4.4",
