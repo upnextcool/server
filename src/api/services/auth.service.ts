@@ -138,6 +138,6 @@ export class AuthService {
     });
     await this._activeAuthService.remove(activeAuth);
 
-    return party.id;
+    return party.code;
   }
 }

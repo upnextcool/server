@@ -60,7 +60,7 @@ export class PartyService {
   }
 
   private generateCode(): string {
-    const ALL = 'abcdefghijklmnpqrstuvwxyz1234567890'.toUpperCase();
+    const ALL = '1234567890'.toUpperCase();
     return [ ...'XXXX' ].map(() => ALL[Math.floor(Math.random() * ALL.length)]).join('');
   }
 

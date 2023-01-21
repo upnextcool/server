@@ -245,31 +245,38 @@ export class UpNextService {
   }
 
   async partyLoopStuff(party: Party): Promise<void> {
-    const currentSpotifyState = await this._spotifyService.spotifyApis.player
-      .getCurrentlyPlaying(party.spotifyAccount.token);
-    const previousState = await this._partyStateService.getStateFor(party);
+    try {
+      const currentSpotifyState = await this._spotifyService.spotifyApis.player
+        .getCurrentlyPlaying(party.spotifyAccount.token);
 
-    const currentPartyState = await this.determineCurrentState(
-      party,
-      currentSpotifyState,
-      previousState ? previousState.currentlyPlaying : undefined
-    );
+      const previousState = await this._partyStateService.getStateFor(party);
 
-    const computedPartyState = await this.stateMachine(
-      party,
-      currentPartyState, 
-      currentSpotifyState,
-      previousState ? previousState.partyState : undefined
-    );
-    
-    this._partyStateService.setStateFor(
-      party, 
-      {
-        currentlyPlaying: currentSpotifyState,
-        partyState: computedPartyState,
-        state: currentPartyState,
-      }
-    );
+      const currentPartyState = await this.determineCurrentState(
+        party,
+        currentSpotifyState,
+        previousState ? previousState.currentlyPlaying : undefined
+      );
+
+      const computedPartyState = await this.stateMachine(
+        party,
+        currentPartyState,
+        currentSpotifyState,
+        previousState ? previousState.partyState : undefined
+      );
+
+      this._partyStateService.setStateFor(
+        party,
+        {
+          currentlyPlaying: currentSpotifyState,
+          partyState: computedPartyState,
+          state: currentPartyState,
+        }
+      );
+    } catch(error) {
+      console.error(
+        `Looks like we have an issue with party: '${party.name}'`, error
+      );
+    }
   }
   
   private async stateMachine(
@@ -280,68 +287,12 @@ export class UpNextService {
   ): Promise<PartyState> {
     switch (currentPartyState) {
     case PartyStateEnum.NEW_SONG:
-      await this._spotifyService.spotifyApis.playlist.addTracks(
-        party.spotifyAccount.token,
-        party.spotifyPlaylistId,
-        [ currentSpotifyState.item.id ]
-      );
-      const artwork = currentSpotifyState.item.album.images
-        .find(image => image.height ===
-          Math.max(...currentSpotifyState.item.album.images.map(p => p.height))).url;
-      this._partyStateService.setEmptyNextSongQueue(party);
-      await this._playlistHistoryService.addToHistory({
-        albumArtwork: artwork,
-        artist: currentSpotifyState.item.artists.map(a => a.name).join(', '),
-        name: currentSpotifyState.item.name,
-        party,
-        spotifyId: currentSpotifyState.item.id
-      });
-      return this._partyStateService.updateState(
-        undefined, {
-          artist: currentSpotifyState.item.artists.map(a => a.name).join(', '),
-          artwork,
-          duration: currentSpotifyState.item.duration_ms,
-          name: currentSpotifyState.item.name,
-          palette: await this._partyStateService.computePalette(artwork),
-          playing: currentSpotifyState.is_playing,
-          progress: currentSpotifyState.progress_ms,
-          spotifyId: currentSpotifyState.item.id
-        }
+      return this.newSongState(
+        party, currentSpotifyState
       );
     case PartyStateEnum.NEXT_FROM_QUEUE:
-      const playlist = await this._partyService.getPlaylistFor(party);
-      if (playlist.length > 0 && !this._partyStateService.hasSongQueued(party)) {
-        const sorted = playlist.map(entry => ({ 
-          ...entry, 
-          score: entry.votes
-            .map(v => v.type === VoteTypeEnum.UP_VOTE ? 1 : -1)
-            .reduce(
-              (
-                p, 
-                c
-              ) => p + c, 0
-            ) 
-        })).sort((
-          a, b
-        ) => b.score - a.score);
-        const [ nextSong ] = sorted;
-        const spotifyAccount = await this._partyService.getSpotifyAccountFor(party);
-        await this._spotifyService.spotifyApis.player.addSongToEndOfQueue(
-          spotifyAccount.token,
-          nextSong.spotifyId
-        );
-        await this._playlistEntryService.remove(nextSong);
-        this._partyStateService.setNextSongQueued(
-          party,
-          nextSong.spotifyId
-        );
-      }
-      return this._partyStateService.updateState(
-        previousPartyState,
-        {
-          playing: currentSpotifyState.is_playing,
-          progress: currentSpotifyState.progress_ms
-        }
+      return this.nextFromQueueState(
+        party, previousPartyState, currentSpotifyState
       );
     case PartyStateEnum.PLAYING:
       return this._partyStateService.updateState(
@@ -358,9 +309,81 @@ export class UpNextService {
     case PartyStateEnum.NOTHING_PLAYING:
       return undefined;
     default:
-      console.log('UNKNOWN STATE');
+      console.error('UNKNOWN STATE');
     }
     return undefined;
+  }
+
+  private async nextFromQueueState(
+    party: Party, previousPartyState: PartyState, currentSpotifyState: CurrentlyPlaying
+  ): Promise<PartyState> {
+    const playlist = await this._partyService.getPlaylistFor(party);
+    if (playlist.length > 0 && !this._partyStateService.hasSongQueued(party)) {
+      const sorted = playlist.map(entry => ({
+        ...entry,
+        score: entry.votes
+          .map(v => v.type === VoteTypeEnum.UP_VOTE ? 1 : -1)
+          .reduce(
+            (
+              p,
+              c,
+            ) => p + c, 0,
+          ),
+      })).sort((
+        a, b,
+      ) => b.score - a.score);
+      const [ nextSong ] = sorted;
+      const spotifyAccount = await this._partyService.getSpotifyAccountFor(party);
+      await this._spotifyService.spotifyApis.player.addSongToEndOfQueue(
+        spotifyAccount.token,
+        nextSong.spotifyId,
+      );
+      await this._playlistEntryService.remove(nextSong);
+      this._partyStateService.setNextSongQueued(
+        party,
+        nextSong.spotifyId,
+      );
+    }
+    return this._partyStateService.updateState(
+      previousPartyState,
+      {
+        playing: currentSpotifyState.is_playing,
+        progress: currentSpotifyState.progress_ms,
+      },
+    );
+  }
+
+  private async newSongState(
+    party: Party, currentSpotifyState: CurrentlyPlaying
+  ): Promise<PartyState> {
+    await this._spotifyService.spotifyApis.playlist.addTracks(
+      party.spotifyAccount.token,
+      party.spotifyPlaylistId,
+      [ currentSpotifyState.item.id ],
+    );
+    const artwork = currentSpotifyState.item.album.images
+      .find(image => image.height===
+        Math.max(...currentSpotifyState.item.album.images.map(p => p.height))).url;
+    this._partyStateService.setEmptyNextSongQueue(party);
+    await this._playlistHistoryService.addToHistory({
+      albumArtwork: artwork,
+      artist: currentSpotifyState.item.artists.map(a => a.name).join(', '),
+      name: currentSpotifyState.item.name,
+      party,
+      spotifyId: currentSpotifyState.item.id,
+    });
+    return this._partyStateService.updateState(
+      undefined, {
+        artist: currentSpotifyState.item.artists.map(a => a.name).join(', '),
+        artwork,
+        duration: currentSpotifyState.item.duration_ms,
+        name: currentSpotifyState.item.name,
+        palette: await this._partyStateService.computePalette(artwork),
+        playing: currentSpotifyState.is_playing,
+        progress: currentSpotifyState.progress_ms,
+        spotifyId: currentSpotifyState.item.id,
+      },
+    );
   }
 
   private async determineCurrentState(

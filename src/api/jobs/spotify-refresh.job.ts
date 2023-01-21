@@ -34,11 +34,4 @@ export class SpotifyRefreshJob {
         this._spotifyAccountService.refreshTokenFor(party)));
     }
   }
-
-  // @Cron(
-  //   'update-party-state', '*/2 * * * * *'
-  // )
-  // async updatePartyState() {
-  //   console.log('UPDATE STATE');
-  // }
 }

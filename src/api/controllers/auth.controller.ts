@@ -11,14 +11,18 @@ export class AuthController {
   constructor(private readonly _authService: AuthService) {}
 
   @Get('/callback')
-  @Redirect(`${environment.front.url}/app`)
+  @Redirect(`${environment.front.url}/join?code=:code`)
   async OAuthCallback(
     @QueryParam('code') code: string,
     @QueryParam('state') state: string
-  ): Promise<void> {
-    await this._authService.oAuthCallback(
+  ): Promise<Record<string, string>> {
+    const partyCode = await this._authService.oAuthCallback(
       code,
       state
     );
+
+    return {
+      code: partyCode
+    };
   }
 }
