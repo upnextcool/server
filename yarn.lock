@@ -9031,10 +9031,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedi@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "typedi@npm:0.8.0"
-  checksum: f6fc275672945953aa3486582273a89bcf4e6c0808810a1f21332f4725d0493d1fb74fef8cdb7bc700ec8aa9c36db9a070d6a2f88c8639037185f0d78b988692
+"typedi@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "typedi@npm:0.10.0"
+  checksum: d26491e3684677d898f745b2ea5403cad4e03f7ed87b35d0a1cc80cbb4837d50042e100574da77d56dd04e3f0270a6f7df18270171c828bec6b93cefbac059a3
   languageName: node
   linkType: hard
 
@@ -9248,7 +9248,7 @@ __metadata:
     tsconfig-paths: ^3.9.0
     tsconfig-paths-webpack-plugin: ^3.5.1
     type-graphql: ^1.1.1
-    typedi: ^0.8.0
+    typedi: ^0.10.0
     typeorm: ^0.2.25
     typeorm-typedi-extensions: ^0.2.3
     typescript: ^4.0.3
