@@ -33,7 +33,7 @@
     "graphql": "^15.5.0",
     "graphql-type-json": "^0.3.2",
     "is-there": "^4.5.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "microframework": "^0.6.4",
     "multer": "^1.4.2",
     "node-vibrant": "^3.2.1-alpha.1",
