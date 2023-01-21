@@ -5764,6 +5764,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.capitalize@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "lodash.capitalize@npm:4.2.1"
+  checksum: d9195f31d48c105206f1099946d8bbc8ab71435bc1c8708296992a31a992bb901baf120fdcadd773098ac96e62a79e6b023ee7d26a2deb0d6c6aada930e6ad0a
+  languageName: node
+  linkType: hard
+
 "lodash.clonedeep@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.clonedeep@npm:4.5.0"
@@ -5838,6 +5845,13 @@ __metadata:
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
   checksum: db170c9396d29d11fe9a9f25668c4993e0c1331bcb941ddbd48fb76f492e732add7f2a47cfdf8e9d740fa59ac41bbfaf931d268bc72aab3ab49e9f89354d718c
+  languageName: node
+  linkType: hard
+
+"lodash.startcase@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "lodash.startcase@npm:4.4.0"
+  checksum: c03a4a784aca653845fe09d0ef67c902b6e49288dc45f542a4ab345a9c406a6dc194c774423fa313ee7b06283950301c1221dd2a1d8ecb2dac8dfbb9ed5606b5
   languageName: node
   linkType: hard
 
@@ -6692,19 +6706,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^1.3.0":
-  version: 1.4.0
-  resolution: "openapi3-ts@npm:1.4.0"
-  checksum: f45cb15fae165e97cacd482ae9c57b15ab5756e370542ad105593cc6f00c0bd9d1489fc63da6c98d3ace8e16af5ac1e12681568129c30793056436bd6a4aff2a
-  languageName: node
-  linkType: hard
-
 "openapi3-ts@npm:^2.0.0":
   version: 2.0.1
   resolution: "openapi3-ts@npm:2.0.1"
   dependencies:
     yaml: ^1.10.0
   checksum: 11114b44366c8f9a2466fc2053513286c516681548eac37a57964510bdca95e0a1e625306a0dc6a2457391b770e16d22da88d6e2886bad745e6b990f403f8a09
+  languageName: node
+  linkType: hard
+
+"openapi3-ts@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "openapi3-ts@npm:2.0.2"
+  dependencies:
+    yaml: ^1.10.2
+  checksum: ec82bbbbd51cb8311f52f10e0441d72715b10446269040556251edcdc0230b86e3790f48b324881c4a1b22e87a317b5eb70e4d6cb717242bfd32674f21eecfc9
   languageName: node
   linkType: hard
 
@@ -6993,10 +7009,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^2.2.1":
-  version: 2.4.0
-  resolution: "path-to-regexp@npm:2.4.0"
-  checksum: 581175bf2968e51452f2b8c71f10e75c995693668b4ecf7d0b48962fbe0c56830661ca5dd5fd6d8e2f0cc9a045ce07e89af504ab133e1d21887c2712df85b1f4
+"path-to-regexp@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "path-to-regexp@npm:6.2.1"
+  checksum: f0227af8284ea13300f4293ba111e3635142f976d4197f14d5ad1f124aebd9118783dd2e5f1fe16f7273743cc3dbeddfb7493f237bb27c10fdae07020cc9b698
   languageName: node
   linkType: hard
 
@@ -7797,18 +7813,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"routing-controllers-openapi@npm:^2.1.0":
-  version: 2.2.0
-  resolution: "routing-controllers-openapi@npm:2.2.0"
+"routing-controllers-openapi@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "routing-controllers-openapi@npm:4.0.0"
   dependencies:
-    lodash: ^4.17.15
-    openapi3-ts: ^1.3.0
-    path-to-regexp: ^2.2.1
+    lodash.capitalize: ^4.2.1
+    lodash.merge: ^4.6.2
+    lodash.startcase: ^4.4.0
+    openapi3-ts: ^2.0.2
+    path-to-regexp: ^6.2.1
     reflect-metadata: ^0.1.13
-    tslib: ^1.11.1
+    tslib: ^2.4.1
   peerDependencies:
-    routing-controllers: ^0.8.0
-  checksum: c8c1df741f8ed176ed70ff87d28cc01f120a97f3ff444a5598b767d0ac979d11787056b1f8a0b8a0f7aa907bd4d7de635f7e9e6d81fc99198a2f17520dd03980
+    routing-controllers: ^0.10.0
+  checksum: fe85f62b1921914a194e1a6d78cc9fae03923a1acbb12a1956a75174156df41849e831b645c9cc43bc4929e9a651d0a0538a1aeb0327441f304ca6328d71bbea
   languageName: node
   linkType: hard
 
@@ -8913,10 +8931,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.10.0, tslib@npm:^1.11.1, tslib@npm:^1.8.1, tslib@npm:^1.9.3":
+"tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.3":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "tslib@npm:2.4.1"
+  checksum: 19480d6e0313292bd6505d4efe096a6b31c70e21cf08b5febf4da62e95c265c8f571f7b36fcc3d1a17e068032f59c269fab3459d6cd3ed6949eafecf64315fca
   languageName: node
   linkType: hard
 
@@ -9240,7 +9265,7 @@ __metadata:
     reflect-metadata: ^0.1.13
     rimraf: ^3.0.2
     routing-controllers: ^0.9.0-alpha.6
-    routing-controllers-openapi: ^2.1.0
+    routing-controllers-openapi: ^4.0.0
     sha512: ^0.0.1
     swagger-ui-express: ^4.1.2
     ts-loader: ^9.2.2
@@ -9775,7 +9800,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^1.10.0":
+"yaml@npm:^1.10.0, yaml@npm:^1.10.2":
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
